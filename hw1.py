@@ -22,8 +22,17 @@ def preprocess(X,y):
     ###########################################################################
     # TODO: Implement the normalization function.                             #
     ###########################################################################
-    X = (X - np.mean(X))/(np.max(X) - np.min(X))
-    y = (y - np.mean(y))/(np.max(y) - np.min(y))
+    max_x = np.max(X, axis=0)
+    min_x = np.min(X, axis=0)
+    avg_x = np.mean(X, axis=0)
+
+    max_y = np.max(y)
+    min_y = np.min(y)
+    avg_y = np.mean(y)
+
+    # normalize the features and the true labels
+    X = (X - avg_x) / (max_x - min_x)
+    y = (y - avg_y) / (max_y - min_y)
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -43,11 +52,13 @@ def apply_bias_trick(X):
     ###########################################################################
     # TODO: Implement the bias trick by adding a column of ones to the data.                             #
     ###########################################################################
-    X = np.column_stack((np.ones_like(X), X))
+    col = np.ones(X.shape[0])
+    X = np.column_stack((col, X))
+    return X
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
-    return X
+
 
 def compute_cost(X, y, theta):
     """
@@ -69,7 +80,7 @@ def compute_cost(X, y, theta):
     ###########################################################################
     h_theta = np.dot(X, theta)
 
-    J = 1/(2*np.size(y)) * np.sum(np.square(h_theta-y)) 
+    J = 1/(2*np.size(y)) * np.sum(np.square(h_theta-y))
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
@@ -104,7 +115,7 @@ def gradient_descent(X, y, theta, alpha, num_iters):
     for _ in range(num_iters):
         h_theta = np.dot(X, theta)
         sum = np.dot((h_theta - y).T, X)
-        theta = theta - alpha * (1/np.size(y)) * sum 
+        theta = theta - alpha * (1/np.size(y)) * sum
         J_history.append(compute_cost(X, y, theta))
     ###########################################################################
     #                             END OF YOUR CODE                            #
@@ -131,10 +142,8 @@ def compute_pinv(X, y):
     pinv_theta = []
     ###########################################################################
     # TODO: Implement the pseudoinverse algorithm.                            #
-    ###########################################################################
-    inverse = np.linalg.inv(np.dot(X.T, X))
-    pinv = np.dot(inverse, X.T)
-    pinv_theta = np.dot(pinv, y)
+    ##########################################################################
+    pinv_theta = np.matmul(np.matmul(np.linalg.inv(np.matmul(X.T, X)), X.T), y)
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################

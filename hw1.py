@@ -175,8 +175,9 @@ def efficient_gradient_descent(X, y, theta, alpha, num_iters):
     ###########################################################################
     for _ in range(num_iters):
         h_theta = np.dot(X, theta)
-        sum = np.dot((h_theta - y).T, X)
-        theta = theta - alpha * (1/np.size(y)) * sum 
+        sum = np.dot(X.T, (h_theta - y))
+        temp_theta = theta - alpha * (1/np.size(y)) * sum
+        theta = temp_theta
         J_history.append(compute_cost(X, y, theta))
         if len(J_history) > 1 and J_history[-2] - J_history[-1] < 1e-8:
             break
@@ -225,7 +226,8 @@ def forward_feature_selection(X_train, y_train, X_val, y_val, best_alpha, iterat
     and using only the most relevant features, potentially reducing overfitting, 
     improving accuracy, and reducing computational cost.
 
-    You should use the efficient version of gradient descent for this part. 
+    You should use the efficient version of gradient descent for this part.
+
 
     Input:
     - X_train, y_train, X_val, y_val: the input data without bias trick
@@ -239,7 +241,23 @@ def forward_feature_selection(X_train, y_train, X_val, y_val, best_alpha, iterat
     #####c######################################################################
     # TODO: Implement the function and find the best alpha value.             #
     ###########################################################################
-    pass
+    for j in range(5):
+        np.random.seed(42)
+        theta = np.random.random(X_train.shape[1])
+        min_cost  = np.Inf
+        min_index = np.Inf
+        for i in range(len(X_train[1])):
+            if i not in selected_features:
+                selected_features.append(i)
+                new_X = apply_bias_trick(X_train[:,selected_features])
+                h_theta, J_history = efficient_gradient_descent(new_X, y_train, theta, best_alpha, iterations)
+                cur_cost = J_history[-1]
+                selected_features.remove(i)
+            if cur_cost < min_cost:
+                min_cost = cur_cost
+                min_index = i
+        selected_features.append(min_index)
+
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################

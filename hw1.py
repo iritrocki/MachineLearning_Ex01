@@ -243,7 +243,7 @@ def forward_feature_selection(X_train, y_train, X_val, y_val, best_alpha, iterat
     ###########################################################################
     for j in range(5):
         np.random.seed(42)
-        theta = np.random.random(X_train.shape[1])
+        theta = np.random.random(j+2)
         min_cost  = np.Inf
         min_index = np.Inf
         for i in range(len(X_train[1])):
@@ -257,7 +257,6 @@ def forward_feature_selection(X_train, y_train, X_val, y_val, best_alpha, iterat
                 min_cost = cur_cost
                 min_index = i
         selected_features.append(min_index)
-
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################

@@ -278,14 +278,17 @@ def create_square_features(df):
     ###########################################################################
     # TODO: Implement the function to add polynomial features                 #
     ###########################################################################
+    aux_dict = {}
     for f1 in df.columns:
         for f2 in df.columns:
             if f1 == f2:
-                if f"{f1}^2" not in df_poly.columns:
-                    df_poly[f"{f1}^2"] = df[f1]*df[f2]
+                if f"{f1}^2" not in aux_dict:
+                    aux_dict[f"{f1}^2"] = df[f1]*df[f2]
             else:
-                if f"{f1}*{f2}" not in df_poly.columns and f"{f2}*{f1}" not in df_poly.columns:
-                    df_poly[f"{f1}*{f2}"] = df[f1]*df[f2]
+                if f"{f1}*{f2}" not in aux_dict and f"{f2}*{f1}" not in aux_dict:
+                    aux_dict[f"{f1}*{f2}"] = df[f1]*df[f2]
+    aux_df = pd.DataFrame.from_dict(aux_dict)
+    df_poly = pd.concat([df_poly, aux_df], axis=1)
     ###########################################################################
     #                             END OF YOUR CODE                            #
     ###########################################################################
